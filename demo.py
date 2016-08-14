@@ -1,10 +1,12 @@
 #coding=utf-8
+import uuid
 import urllib3
 import os
 import re
 import logging
 
 http = urllib3.PoolManager()
+file_path = 'F:\\work\\spider\\'
 #get请求 返回response
 def get(url):
 	try:
@@ -39,9 +41,9 @@ def getImg(html):
 #处理文图片件名
 def handleImgName(url):
 	fileName = url.split('?')[0].split('/')[-1];
-	#如果文件没有后缀，默认不处理
+	#如果文件没有后缀，自动生成文件名
 	if fileName.find('.') == -1:
-		return 
+		return str(uuid.uuid1()) + '.jpg'
 	else:
 		return fileName
 		
@@ -50,18 +52,25 @@ def my_urlencode(str) :
        return reprStr[1:-1]
 	   
 def store(url):
-	print('start...:' + url)
 	fileName = handleImgName(url);
-	if not fileName:
+	global newName
+	if not fileName:		
 		return
-	print("dowloading...:" + fileName)
-	with open('F:\\work\\spider\\' + fileName,'wb') as f:
+	
+	with open(file_path + fileName,'wb') as f:
 		img = getData(url)
 		if img:
+			print("dowloading...:" + fileName)
+			newName = fileName
 			f.write(img)
 html = getDataStr("http://zhidao.baidu.com/link?url=ktZv96emvieLcNPWnrgdoteSifB16M1uUh9pWAb3zMjcR1l9AbanxnFAOUdU-zVH9hkdsj8PH_rpAmCApHcMv_")
 imglist = getImg(html)
 
 if imglist:
-	for img in imglist:
-		store(img)
+	list = []
+	catalog = ''
+	for url in imglist:
+		store(url)
+		catalog += url + '  ' + newName + '\n'
+	with open(file_path + 'catalog.txt','a') as f:
+		f.write(catalog)
