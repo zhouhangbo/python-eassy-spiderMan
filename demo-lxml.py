@@ -1,19 +1,19 @@
 #coding=utf-8
 import uuid
-import urllib3
+from my_http import http
 import os
 import re
 from log import logging
 import utils
-from __init__ import *
+import chardet
+from config import *
 
-http = urllib3.PoolManager()
 file_path = Constants.spiderPath
 catelogPath = Constants.catelogPath
 #初始化文件夹
 utils.mkdir(file_path)
 
-url = "http://zhidao.baidu.com/link?url=ktZv96emvieLcNPWnrgdoteSifB16M1uUh9pWAb3zMjcR1l9AbanxnFAOUdU-zVH9hkdsj8PH_rpAmCApHcMv_"
+url = "http://limu.iteye.com/blog/1013223"
 
 #get请求 返回response
 def get(url):
@@ -27,13 +27,10 @@ def get(url):
 		return
 		#logging.error('ResponseError:',e)
 		
-def getDataStr(url):
-	r = get(url)
-	if r:
-		return str(r.data)
 def getData(url):
 	r = get(url)
 	if r:
+		print(type(r.data))
 		return r.data
 				
 #处理文图片件名
@@ -66,15 +63,17 @@ def store(url):
 	global newName
 	if not fileName:		
 		return
-	
-	with open(file_path + fileName,'wb') as f:
-		img = getData(url)
-		if img:
+	img = getData(url)
+	if img:
+		with open(file_path + fileName,'wb') as f:
 			logging.info("dowloading...:" + fileName)
 			print("dowloading...:" + fileName)
 			newName = fileName
 			f.write(img)
-html = getDataStr(url)
+	else:
+		logging.error('dowload error with:' + url)
+		
+html = getData(url)
 imglist = utils.getImgUrl(html)
 
 if imglist:

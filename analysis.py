@@ -16,7 +16,7 @@ class Page(object):
 			attrs.append(attr)
 		return attrs
 
-html = "<html><body><img src=\"123\" style=\"32\"></body></html>"		
+html = "<html><body><img src='123' style=\"32\"></body></html>"		
 if __name__ == '__main__':
 	page = Page(html)
 	print(page.html)

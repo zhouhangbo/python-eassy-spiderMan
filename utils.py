@@ -11,6 +11,7 @@ def getImgUrl(html):
 	else:
 		page = Page(html)
 		attrs = page.getElementAttrs('img')
+		
 		imglist = []
 		for attr in attrs:
 			imglist.append(attr.get('src'))
